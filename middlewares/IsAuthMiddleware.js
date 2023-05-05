@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import {SECRET} from "../index.js";
 
-export default (req, res, next) => {
+export const isAuthMiddleware = (req, res, next) => {
     try {
         const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
         if (!token) throw ({code: 403, message: 'Forbidden.'})
