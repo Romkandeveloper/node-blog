@@ -2,7 +2,6 @@ import {validationResult} from "express-validator";
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
-import {SECRET} from "../index.js";
 
 export const register = async (req, res) => {
     try {
@@ -22,7 +21,7 @@ export const register = async (req, res) => {
         });
 
         const user = await doc.save();
-        const token = jwt.sign({_id: user._id}, SECRET, {expiresIn: '30d'});
+        const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET, {expiresIn: '30d'});
 
         const {password, ...userData} = user._doc;
 
@@ -54,7 +53,7 @@ export const login = async (req, res) => {
             throw ({code: 403, message: 'Wrong email or password.'});
         }
 
-        const token = jwt.sign({_id: user._id}, SECRET, {expiresIn: '30d'});
+        const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET, {expiresIn: '30d'});
         const { password, ...userData } = user._doc;
 
         res.json({
