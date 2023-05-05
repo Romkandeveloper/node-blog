@@ -6,6 +6,7 @@ import { registerValidation } from "./validation/auth/RegisterValidation.js";
 import { loginValidation } from "./validation/auth/LoginValidation.js";
 import { validationResult } from "express-validator";
 import UserModel from "./models/User.js";
+import IsAuthMiddleware from "./middlewares/IsAuthMiddleware.js";
 
 const app = express();
 app.use(express.json());
@@ -14,7 +15,7 @@ mongoose.connect('mongodb+srv://romanchaban9:csDVnub5Cj7GIpp3@blog.yw96xl4.mongo
     .then(() => console.log('DB has been connected!'))
     .catch(e => console.log(e));
 
-const SECRET = 'secretKey';
+export const SECRET = 'secretKey';
 app.post('/auth/login', loginValidation, async (req, res) => {
     try {
         const validationErrors = validationResult(req);
@@ -34,7 +35,7 @@ app.post('/auth/login', loginValidation, async (req, res) => {
         }
 
         const token = jwt.sign({_id: user._id}, SECRET, {expiresIn: '30d'});
-        const { passwordHash, ...userData } = user._doc;
+        const { password, ...userData } = user._doc;
 
         res.json({
             data: {
@@ -53,9 +54,9 @@ app.post('/auth/register', registerValidation, async (req, res) => {
             throw ({code: 422, message: 'Validation Error.'});
         }
 
-        const password = req.body.password;
+        const pass = req.body.password;
         const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
+        const hash = await bcrypt.hash(pass, salt);
 
         const doc = new UserModel({
             email: req.body.email,
@@ -67,7 +68,7 @@ app.post('/auth/register', registerValidation, async (req, res) => {
         const user = await doc.save();
         const token = jwt.sign({_id: user._id}, SECRET, {expiresIn: '30d'});
 
-        const { passwordHash, ...userData } = user._doc;
+        const { password, ...userData } = user._doc;
 
         res.status(203).json({
             data: {
@@ -78,6 +79,18 @@ app.post('/auth/register', registerValidation, async (req, res) => {
     } catch (e) {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     };
+});
+app.get('/auth/me', IsAuthMiddleware, async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId);
+        if (!user) throw ({code: 404, message: 'User not found.'});
+
+        const { password, ...userData } = user._doc;
+
+        res.json({data: {user: userData},});
+    } catch (e) {
+        return res.status(e.code || 400).json({status: 'error', message: e.message});
+    }
 });
 
 const PORT = 3000;
