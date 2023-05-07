@@ -38,13 +38,21 @@ export const index = async (req, res) => {
 }
 export const show = async (req, res) => {
     try {
-        const post = await PostModel.findByIdAndUpdate(req.params.id, {
+        const post = await PostModel.findByIdAndUpdate(req.params.postId, {
             $inc: {viewsCount: 1},
         }, {
             returnDocument: 'after'
         });
 
         return res.json({data: {post}});
+    } catch (e) {
+        return res.status(e.code || 400).json({status: 'error', message: e.message});
+    }
+}
+export const remove = async (req, res) => {
+    try {
+         await PostModel.findByIdAndDelete(req.params.postId);
+         return res.json({status: 'success'});
     } catch (e) {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     }
