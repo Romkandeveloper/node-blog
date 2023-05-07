@@ -5,5 +5,4 @@ export const createPostValidation = [
     body('text').isString().isLength({min: 10}),
     body('tags').optional().isArray(),
     body('tags.*').isString().isLength({min: 3}),
-    body('image').optional().isString(),
 ];
