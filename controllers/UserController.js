@@ -1,4 +1,5 @@
 import {validationResult} from "express-validator";
+import { userResource } from "../resources/UserResource.js";
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import jwt from "jsonwebtoken";
@@ -68,12 +69,10 @@ export const login = async (req, res) => {
 }
 export const me = async (req, res) => {
     try {
-        const user = await UserModel.findById(req.userId);
+        const user = await UserModel.findById(req.userId, userResource);
         if (!user) throw ({code: 404, message: 'User not found.'});
 
-        const {password, ...userData} = user._doc;
-
-        res.json({data: {user: userData}});
+        res.json({data: {user}});
     } catch (e) {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     }

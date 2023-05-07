@@ -1,5 +1,6 @@
 import {validationResult} from "express-validator";
 import PostModel from "../models/Post.js";
+import {postResource} from "../resources/PostResource.js";
 
 export const store = async (req, res) => {
     try {
@@ -11,7 +12,6 @@ export const store = async (req, res) => {
         const doc = new PostModel({
             title: req.body.title,
             text: req.body.text,
-            image: req.body.image,
             tags: req.body.tags,
             user: req.userId,
         });
@@ -68,7 +68,9 @@ export const update = async (req, res) => {
             title: req.body.title,
             text: req.body.text,
             tags: req.body.tags,
-        }, {returnDocument: 'after'});
+        }, {
+            returnDocument: 'after',
+        });
 
         return res.json({data: {post}});
     } catch (e) {
