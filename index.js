@@ -7,7 +7,6 @@ import { isAuthMiddleware } from "./middlewares/IsAuthMiddleware.js";
 import * as UserController  from "./controllers/UserController.js";
 import * as PostController from "./controllers/PostController.js";
 import {createPostValidation} from "./validation/posts/CreatePostValidation.js";
-import Post from "./models/Post.js";
 
 dotenv.config();
 const app = express();
@@ -22,6 +21,7 @@ app.post('/auth/register', registerValidation, UserController.register);
 app.get('/auth/me', isAuthMiddleware, UserController.me);
 app.post('/posts', isAuthMiddleware, createPostValidation, PostController.store);
 app.get('/posts', PostController.index);
+app.get('/posts/:id', PostController.show);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, (err) => {

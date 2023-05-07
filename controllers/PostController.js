@@ -36,3 +36,16 @@ export const index = async (req, res) => {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     }
 }
+export const show = async (req, res) => {
+    try {
+        const post = await PostModel.findByIdAndUpdate(req.params.id, {
+            $inc: {viewsCount: 1},
+        }, {
+            returnDocument: 'after'
+        });
+
+        return res.json({data: {post}});
+    } catch (e) {
+        return res.status(e.code || 400).json({status: 'error', message: e.message});
+    }
+}
