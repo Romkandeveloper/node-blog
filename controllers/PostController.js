@@ -25,3 +25,14 @@ export const store = async (req, res) => {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     }
 }
+export const index = async (req, res) => {
+    try {
+        const posts = await PostModel.find();
+
+        res.status(203).json({
+            data: {posts},
+        });
+    } catch (e) {
+        return res.status(e.code || 400).json({status: 'error', message: e.message});
+    }
+}
