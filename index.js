@@ -5,6 +5,8 @@ import { registerValidation } from "./validation/auth/RegisterValidation.js";
 import { loginValidation } from "./validation/auth/LoginValidation.js";
 import { isAuthMiddleware } from "./middlewares/IsAuthMiddleware.js";
 import * as UserController  from "./controllers/UserController.js";
+import * as PostController from "./controllers/PostController.js";
+import {createPostValidation} from "./validation/posts/CreatePostValidation.js";
 
 dotenv.config();
 const app = express();
@@ -17,6 +19,7 @@ mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PA
 app.post('/auth/login', loginValidation, UserController.login);
 app.post('/auth/register', registerValidation, UserController.register);
 app.get('/auth/me', isAuthMiddleware, UserController.me);
+app.post('/posts', isAuthMiddleware, createPostValidation, PostController.store);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, (err) => {
