@@ -57,3 +57,21 @@ export const remove = async (req, res) => {
         return res.status(e.code || 400).json({status: 'error', message: e.message});
     }
 }
+export const update = async (req, res) => {
+    try {
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            throw ({code: 422, message: 'Validation Error.'});
+        }
+
+        const post = await PostModel.findByIdAndUpdate(req.params.postId, {
+            title: req.body.title,
+            text: req.body.text,
+            tags: req.body.tags,
+        }, {returnDocument: 'after'});
+
+        return res.json({data: {post}});
+    } catch (e) {
+        return res.status(e.code || 400).json({status: 'error', message: e.message});
+    }
+}

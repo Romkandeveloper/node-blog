@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { registerValidation } from "./validation/auth/RegisterValidation.js";
 import { loginValidation } from "./validation/auth/LoginValidation.js";
 import { createPostValidation } from "./validation/posts/CreatePostValidation.js";
+import { updatePostValidation } from "./validation/posts/UpdatePostValidation.js";
 import { isAuthMiddleware } from "./middlewares/IsAuthMiddleware.js";
 import * as UserController  from "./controllers/UserController.js";
 import * as PostController from "./controllers/PostController.js";
@@ -24,6 +25,7 @@ app.post('/posts', isAuthMiddleware, createPostValidation, PostController.store)
 app.get('/posts', PostController.index);
 app.get('/posts/:postId', PostController.show);
 app.delete('/posts/:postId', isAuthMiddleware, PostPolicy.remove, PostController.remove);
+app.put('/posts/:postId', isAuthMiddleware, PostPolicy.update, updatePostValidation, PostController.update);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, (err) => {
